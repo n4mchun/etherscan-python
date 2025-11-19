@@ -12,11 +12,11 @@ from etherscan.utils.parsing import ResponseParser as parser
 class Etherscan:
     Chain = chainids
 
-    def __new__(cls, api_key: str, chain_id: int = chainids.ETHEREUM_MAINNET):
+    def __new__(cls, api_key: str):
         with resources.path(etherscan, "config.json") as path:
             config_path = str(path)
-        
-        return cls.from_config(api_key=api_key, config_path=config_path, chain_id=chain_id)
+
+        return cls.from_config(api_key=api_key, config_path=config_path)
 
     @staticmethod
     def __load_config(config_path: str) -> dict:
@@ -24,8 +24,11 @@ class Etherscan:
             return json.load(f)
 
     @staticmethod
-    def __run(func, api_key: str, chain_id: int):
+    def __run(func, api_key: str):
         def wrapper(*args, **kwargs):
+            # Extract chain_id from kwargs, default to Ethereum Mainnet
+            chain_id = kwargs.pop('chain_id', chainids.ETHEREUM_MAINNET)
+
             url = (
                 f"{fields.PREFIX}"
                 f"{func(*args, **kwargs)}"
@@ -38,12 +41,12 @@ class Etherscan:
             return parser.parse(r)
 
         return wrapper
-    
+
     @classmethod
-    def from_config(cls, api_key: str, config_path: str, chain_id: int):
+    def from_config(cls, api_key: str, config_path: str):
         config = cls.__load_config(config_path)
         for func, v in config.items():
             if not func.startswith("_"):  # disabled if _
                 attr = getattr(getattr(etherscan, v["module"]), func)
-                setattr(cls, func, cls.__run(attr, api_key, chain_id))
+                setattr(cls, func, cls.__run(attr, api_key))
         return cls

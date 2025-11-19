@@ -14,9 +14,9 @@
 [![DOI](https://zenodo.org/badge/298646404.svg)](https://zenodo.org/badge/latestdoi/298646404)
 
 
-A minimal, yet complete, Python API for [Etherscan.io](https://etherscan.io/). 
+A minimal, yet complete, Python API for [Etherscan.io](https://etherscan.io/).
 
-All standard and pro endpoints are provided. Kovan, Rinkeby and Ropsten testnets are also supported.
+All standard and pro endpoints are provided. Supports 70+ Ethereum-compatible chains including Ethereum Mainnet, Arbitrum, Polygon, Base, Optimism, and many testnets.
 
 Available on [PyPI](https://pypi.org/project/etherscan-python/). Powered by [Etherscan.io APIs](https://etherscan.io/apis#misc).
 
@@ -191,14 +191,32 @@ eth = Etherscan(YOUR_API_KEY) # key in quotation marks
 Then you can call all available methods, e.g.:
 
 ``` python
+# Use default chain (Ethereum Mainnet)
 eth.get_eth_balance(address="0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a")
-
 > '40891631566070000000000'
+
+# Specify a different chain using chain_id parameter
+eth.get_eth_balance(
+    address="0xE3c1ca5c45818e57B298f3a080c8502BF7154352",
+    chain_id=Etherscan.Chain.ARBITRUM_ONE_MAINNET
+)
+> '18051681070507'
+
+# You can switch chains on a per-call basis
+eth.get_eth_balance(address="0x...", chain_id=Etherscan.Chain.POLYGON_MAINNET)
+eth.get_eth_balance(address="0x...", chain_id=Etherscan.Chain.BASE_MAINNET)
+eth.get_eth_balance(address="0x...", chain_id=Etherscan.Chain.OP_MAINNET)
 ```
-You can also choose one of the other testnets:
-``` python
-eth = Etherscan(YOUR_API_KEY, net="ropsten") # net name is case-insensitive, default is main
-```
+
+### Supported Chains
+
+All supported chains are available via `Etherscan.Chain`:
+
+**Mainnets**: `ETHEREUM_MAINNET`, `ARBITRUM_ONE_MAINNET`, `ARBITRUM_NOVA_MAINNET`, `BASE_MAINNET`, `BLAST_MAINNET`, `BNB_SMART_CHAIN_MAINNET`, `POLYGON_MAINNET`, `OP_MAINNET`, `AVALANCHE_C_CHAIN`, `LINEA_MAINNET`, `SCROLL_MAINNET`, `ZKSYNC_MAINNET`, and many more...
+
+**Testnets**: `SEPOLIA_TESTNET`, `HOLESKY_TESTNET`, `ARBITRUM_SEPOLIA_TESTNET`, `BASE_SEPOLIA_TESTNET`, `OP_SEPOLIA_TESTNET`, `POLYGON_AMOY_TESTNET`, and more...
+
+For the complete list, see [`etherscan/enums/chainids_enum.py`](etherscan/enums/chainids_enum.py).
 
 ## Examples
 
